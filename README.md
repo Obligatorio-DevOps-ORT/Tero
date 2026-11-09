@@ -8,6 +8,7 @@ Tero es una tienda en línea basada en microservicios. Permite explorar un catá
 
 - [Docker](https://docs.docker.com/get-docker/) 24+
 - [Docker Compose](https://docs.docker.com/compose/install/) v2.20+
+- Terraform v1.17+
 
 ## Inicio rápido
 
