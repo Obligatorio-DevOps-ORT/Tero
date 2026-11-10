@@ -12,6 +12,14 @@ Tero es una tienda en línea basada en microservicios. Permite explorar un catá
 
 ## Inicio rápido
 
+Antes de levantar los servicios, crear el archivo de variables de entorno a partir de la plantilla y completar los valores (el archivo `.env` no se sube al repo):
+
+```bash
+cp .env.example .env
+```
+
+Después, levantar los servicios:
+
 ```bash
 docker compose up --build
 ```

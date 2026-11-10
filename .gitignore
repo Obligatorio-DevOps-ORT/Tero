@@ -1,3 +1,6 @@
+# Variables de entorno con secretos: nunca se suben al repo
+.env
+
 # Terraform
 .terraform/
 *.tfstate
