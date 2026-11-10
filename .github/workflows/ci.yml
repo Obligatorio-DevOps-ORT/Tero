@@ -31,11 +31,15 @@ jobs:
             --log-opts="${{ steps.rango.outputs.commits }}" --verbose --redact
 
   build:
-    name: Build de catalog
+    name: Build de ${{ matrix.servicio }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        servicio: [catalog, cart, orders, checkout, ui, admin]
     steps:
       - name: Bajar el código
         uses: actions/checkout@v4
 
-      - name: Construir la imagen de catalog
-        run: docker build -t tero-catalog:${{ github.sha }} ./src/catalog
+      - name: Construir la imagen de ${{ matrix.servicio }}
+        run: docker build -t tero-${{ matrix.servicio }}:${{ github.sha }} ./src/${{ matrix.servicio }}
