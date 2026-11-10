@@ -1,0 +1,14 @@
+title = "Configuración de Gitleaks para Tero"
+
+# Usar todas las reglas por defecto de Gitleaks...
+[extend]
+useDefault = true
+
+# ...y sumar una propia para contraseñas en texto plano en archivos de configuración.
+[[rules]]
+id = "password-en-config"
+description = "Contraseña o secreto en texto plano en un archivo de configuración"
+regex = '''(?i)(?:password|passwd|secret)[a-z_]*[ \t]*[:=][ \t]*["']?([^\s"'$<{][^\s"']{3,})'''
+secretGroup = 1
+path = '''(?i)(\.ya?ml|\.env(\.[a-z]+)?|\.tfvars|\.properties|\.ini|\.conf)$'''
+keywords = ["password", "passwd", "secret"]

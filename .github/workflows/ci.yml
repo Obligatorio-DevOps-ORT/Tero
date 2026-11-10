@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  gitleaks:
+    name: Detección de secretos (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el código con todo el historial
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Definir qué commits escanear
+        id: rango
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "commits=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "commits=${{ github.event.before }}..${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Escanear con Gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest git /repo \
+            --log-opts="${{ steps.rango.outputs.commits }}" --verbose --redact
+
+  build:
+    name: Build de catalog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v4
+
+      - name: Construir la imagen de catalog
+        run: docker build -t tero-catalog:${{ github.sha }} ./src/catalog
