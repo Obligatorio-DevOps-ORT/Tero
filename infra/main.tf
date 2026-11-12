@@ -10,8 +10,8 @@ resource "terraform_data" "env_guard" {
 module "network" {
   source = "./modules/network"
 
-  name = "tero-${var.env}"
-  vpc_cidr = var.vpc_cidr
-  public_subnet_cidrs = var.public_subnet_cidrs
+  name                 = "tero-${var.env}"
+  vpc_cidr             = var.vpc_cidr
+  public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
 }
