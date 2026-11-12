@@ -29,7 +29,7 @@ docker compose up --build
 | Tienda   | http://localhost:8080 |
 | Admin    | http://localhost:8081 |
 
-Credenciales del admin por defecto: `admin` / `admin`
+Las credenciales del panel de administración son las que se definan en `ADMIN_USERNAME` y `ADMIN_PASSWORD` del archivo `.env`.
 
 ## Comandos útiles
 
@@ -146,11 +146,11 @@ docker compose logs -f <servicio>
 |----------------------------------------|-----------------------|------------------|
 | `RETAIL_CATALOG_PERSISTENCE_PROVIDER`  | Tipo de persistencia  | `postgres`       |
 | `RETAIL_CATALOG_PERSISTENCE_ENDPOINT`  | Host:Puerto de la DB  | `db:5432`        |
-| `DB_PASSWORD`                          | Contraseña PostgreSQL | `retailpassword` |
+| `DB_PASSWORD`                          | Contraseña PostgreSQL | — (se define en `.env`) |
 
 ### Checkout
 | Variable                                   | Descripción              | Default               |
-|--------------------------------------------|--------------------------|------------------------|
+|--------------------------------------------|--------------------------|-----------------------|
 | `RETAIL_CHECKOUT_PERSISTENCE_PROVIDER`     | Tipo de persistencia     | `redis`               |
 | `RETAIL_CHECKOUT_PERSISTENCE_REDIS_URL`    | URL de Redis             | `redis://redis:6379`  |
 | `RETAIL_CHECKOUT_ENDPOINTS_ORDERS`         | URL del servicio orders  | `http://orders:8080`  |
@@ -158,9 +158,9 @@ docker compose logs -f <servicio>
 ### Admin
 | Variable            | Descripción                | Default                   |
 |---------------------|----------------------------|---------------------------|
-| `ADMIN_USERNAME`    | Usuario administrador      | `admin`                   |
-| `ADMIN_PASSWORD`    | Contraseña administrador   | `admin`                   |
-| `ADMIN_JWT_SECRET`  | Secreto para tokens JWT    | `change-me-in-production` |
+| `ADMIN_USERNAME`    | Usuario administrador      | — (se define en `.env`)   |
+| `ADMIN_PASSWORD`    | Contraseña administrador   | — (se define en `.env`)   |
+| `ADMIN_JWT_SECRET`  | Secreto para tokens JWT    | — (se define en `.env`)   |
 
 ---
 
