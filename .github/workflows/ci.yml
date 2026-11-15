@@ -6,6 +6,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   gitleaks:
     name: Detección de secretos (Gitleaks)
@@ -43,3 +46,27 @@ jobs:
 
       - name: Construir la imagen de ${{ matrix.servicio }}
         run: docker build -t tero-${{ matrix.servicio }}:${{ github.sha }} ./src/${{ matrix.servicio }}
+
+  terraform:
+    name: Terraform (fmt y validate)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.1
+
+      - name: Revisar el formato
+        run: terraform fmt -check -recursive -diff
+
+      - name: Inicializar sin backend
+        run: terraform init -backend=false
+
+      - name: Validar la configuración
+        run: terraform validate
