@@ -1,0 +1,10 @@
+# Lo que NO se manda al build (contexto más chico y sin basura/secretos)
+Dockerfile
+.dockerignore
+.git
+.gitignore
+*.md
+.env
+.env.*
+*_test.go
+catalog
