@@ -17,3 +17,9 @@ variable "private_subnet_cidrs" {
   description = "CIDRs de las subredes privadas"
   type        = list(string)
 }
+
+variable "aws_region" {
+  description = "Region AWS"
+  type        = string
+  default     = "us-east-2"
+}
