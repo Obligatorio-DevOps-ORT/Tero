@@ -2,9 +2,9 @@ terraform {
   required_version = ">=1.17"
 
   backend "s3" {
-    bucket       = "obligatorio-devops-tfstate-26"
+    bucket       = "tero-tfstate-550842784335"
     key          = "terraform.tfstate"
-    region       = "us-east-1"
+    region       = "us-east-2"
     encrypt      = true
     use_lockfile = true
   }
