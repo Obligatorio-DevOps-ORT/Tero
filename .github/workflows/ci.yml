@@ -47,6 +47,25 @@ jobs:
       - name: Construir la imagen de ${{ matrix.servicio }}
         run: docker build -t tero-${{ matrix.servicio }}:${{ github.sha }} ./src/${{ matrix.servicio }}
 
+      - name: Configurar credenciales de AWS
+        if: github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Iniciar sesión en ECR
+        if: github.event_name == 'push'
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Publicar la imagen en ECR
+        if: github.event_name == 'push'
+        run: |
+          IMAGEN="${{ vars.ECR_REGISTRY }}/tero-${{ matrix.servicio }}:${{ github.sha }}"
+          docker tag tero-${{ matrix.servicio }}:${{ github.sha }} "$IMAGEN"
+          docker push "$IMAGEN"
+
   terraform:
     name: Terraform (fmt y validate)
     runs-on: ubuntu-latest
