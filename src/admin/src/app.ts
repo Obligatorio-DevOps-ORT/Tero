@@ -9,13 +9,28 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const JWT_SECRET   = process.env.ADMIN_JWT_SECRET   || 'change-me-in-production';
-const ADMIN_USER   = process.env.ADMIN_USERNAME      || 'admin';
-const ADMIN_PASS   = process.env.ADMIN_PASSWORD      || 'admin';
+// ── Configuración ──────────────────────────────────────────────────────────
+
+// Secretos obligatorios: no tienen valor por defecto. Si falta alguno
+// (o está vacío), admin no arranca (fail fast).
+const REQUIRED_ENV = ['DB_PASSWORD', 'ADMIN_USERNAME', 'ADMIN_PASSWORD', 'ADMIN_JWT_SECRET'];
+
+const missing = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
+if (missing.length > 0) {
+  console.error(`[admin] Faltan variables de entorno obligatorias: ${missing.join(', ')}`);
+  console.error('[admin] En local: revisá el archivo .env (ver .env.example). En ECS: revisá los secretos inyectados en la task definition.');
+  process.exit(1);
+}
+
+const JWT_SECRET   = process.env.ADMIN_JWT_SECRET as string;
+const ADMIN_USER   = process.env.ADMIN_USERNAME as string;
+const ADMIN_PASS   = process.env.ADMIN_PASSWORD as string;
+const DB_PASS      = process.env.DB_PASSWORD as string;
+
+// Configuración no secreta: mantiene sus valores por defecto.
 const DB_HOST      = process.env.DB_HOST             || 'db';
 const DB_PORT      = parseInt(process.env.DB_PORT    || '5432');
 const DB_USER      = process.env.DB_USER             || 'retail_user';
-const DB_PASS      = process.env.DB_PASSWORD         || 'retailpassword';
 
 const catalogDb = new Pool({ host: DB_HOST, port: DB_PORT, database: 'catalogdb', user: DB_USER, password: DB_PASS });
 const ordersDb  = new Pool({ host: DB_HOST, port: DB_PORT, database: 'orders',    user: DB_USER, password: DB_PASS });
