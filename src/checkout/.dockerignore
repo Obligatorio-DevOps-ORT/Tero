@@ -1,0 +1,14 @@
+Dockerfile
+.dockerignore
+.git
+.gitignore
+*.md
+.env
+.env.*
+node_modules
+dist
+# De .yarn solo hace falta releases/ (el Yarn 4 del repo)
+.yarn/cache
+.yarn/install-state.gz
+.yarn/unplugged
+.yarn/build-state.yml

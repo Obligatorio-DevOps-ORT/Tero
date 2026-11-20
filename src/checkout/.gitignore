@@ -1,0 +1,5 @@
+node_modules
+dist
+# Yarn 4: se versiona solo el binario de Yarn (.yarn/releases)
+.yarn/*
+!.yarn/releases
