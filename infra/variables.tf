@@ -23,3 +23,9 @@ variable "aws_region" {
   type        = string
   default     = "us-east-2"
 }
+
+variable "enable_nat_gateway" {
+  description = "Crear el NAT Gateway del ambiente (cobra por hora)"
+  type        = bool
+  default     = false
+}
