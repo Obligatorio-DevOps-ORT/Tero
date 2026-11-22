@@ -23,3 +23,21 @@ variable "enable_nat_gateway" {
   type        = bool
   default     = false
 }
+
+variable "app_port" {
+  description = "Puerto en el que escucha los contenedores de los servicios"
+  type        = number
+  default     = 8080
+}
+
+variable "db_port" {
+  description = "Puerto de Postgres"
+  type        = number
+  default     = 5432
+}
+
+variable "redis_port" {
+  description = "Puerto de Redis"
+  type        = number
+  default     = 6379
+}
