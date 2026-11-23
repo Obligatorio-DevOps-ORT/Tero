@@ -52,13 +52,40 @@ comentarios no bloqueantes:
   mientras se define lo de la cuenta.
 - Se comprometió a escribir el ADR del cambio de cuenta.
 
+## Respuestas del autor
+
+Mario respondió primero por WhatsApp. A pedido de @nicokuro (en la revisión del
+PR #110), dejó las respuestas como comentario en el PR #102 el 23/11/2026, para
+que la ida y vuelta quede registrada en GitHub:
+
+- **Lifecycle de 5 imágenes:** se eligió 5 solo como margen para ahorrar en
+  almacenamiento; se puede subir sin problema.
+- **Cuenta AWS:** es una cuenta del plan gratuito, sin tarjeta vinculada. No
+  cobra: cuando se terminan los créditos o el período gratuito, la cuenta se
+  cierra. Hoy tiene 120 USD de créditos y 177 días restantes (hasta el
+  12/05/2027), con 0 USD gastados en el mes. El acceso es con un correo que
+  Mario creó para el proyecto; ofreció compartirlo o probar las invitaciones de
+  AWS para que el resto del equipo tenga acceso.
+- **Credenciales del CI:** se dejaron claves de acceso, igual que en el Learner
+  Lab, para poder volver ahí si hace falta. Hoy `tero-ci` tiene permisos de
+  administrador porque se usó para probar; **hay que reducirlos** a los
+  equivalentes al LabRole. Se mantiene un solo usuario IAM porque el Lab solo
+  permite uno y así es más fácil volver.
+- **`terraform init -reconfigure`:** reconoció que faltaba documentarlo.
+- **AWS Budgets:** la cuenta ya tenía una alerta, con un presupuesto mensual de
+  50 USD.
+
 ## Qué salió de la revisión
 
 - **PR #103** (de nicokuro): publica las imágenes en ECR con el SHA del commit al
   mergear a `main`, usando las credenciales que dejó este PR.
 - **Issue #70** (S4-18): sumar `infra/global` al job de Terraform del CI.
-- **ADR del cambio de cuenta AWS** (S1-15), a cargo de Romina.
-- **Retención de imágenes:** queda como pendiente obligatorio antes de desplegar.
+- **ADR del cambio de cuenta AWS** (S1-15), a cargo de Romina, con los datos de
+  las respuestas del autor.
+- **Retención de imágenes:** se puede subir de 5; queda para decidir antes de
+  desplegar.
+- **Permisos de `tero-ci`:** pasar de administrador a lo mínimo necesario
+  (S3-08).
 
 ## Capturas
 
@@ -71,11 +98,20 @@ comentarios no bloqueantes:
 ### 3. Cómo lo probó el autor y pendientes
 ![Pruebas y pendientes](03-pruebas-y-pendientes-2026-11-22.png)
 
-### 4. Revisión de @nicokuro
-![Revisión de Nicolás](04-revision-nicolas-2026-11-22.png)
+### 4. Revisión de Nicolás
+![Revisión de Nicolas](04-revision-nicolas-2026-11-22.png)
 
-### 5. Revisión de @RominaRamon10
+### 5. Revisión de Romina
 ![Revisión de Romina](05-revision-romina-2026-11-22.png)
 
 ### 6. Checks en verde y merge
 ![Checks y merge](06-checks-y-merge-2026-11-22.png)
+
+### 7. Respuestas del autor
+![Respuestas del autor](07-respuesta-autor-2026-11-23.png)
+
+### 8. Créditos y costo de la cuenta AWS
+![Créditos de la cuenta AWS](08-creditos-cuenta-aws-2026-11-23.png)
+
+### 9. Alerta de AWS Budgets (50 USD por mes)
+![Alerta de AWS Budgets](09-alerta-budgets-2026-11-23.png)
