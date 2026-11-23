@@ -2,7 +2,7 @@
 
 Matriz que relaciona cada observación preliminar del auditor (letra del obligatorio,
 sección 1) con las tareas del tablero que la resuelven y la evidencia de su resolución.
-Se actualiza en cada PR que cierra una de estas tareas. Verificación final: S5-15.
+Estado al 22/11; se completa en S5-15
 
 Estados: ✅ Resuelta · 🟡 Parcial (resuelta en local, falta AWS o parte) · ⏳ Pendiente
 
