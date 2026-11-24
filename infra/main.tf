@@ -16,3 +16,11 @@ module "network" {
   private_subnet_cidrs = var.private_subnet_cidrs
   enable_nat_gateway   = var.enable_nat_gateway
 }
+
+module "ecs_cluster" {
+  source = "./modules/ecs-cluster"
+
+  name                      = "tero-${var.env}"
+  enable_container_insights = var.enable_container_insights
+  fargate_base              = var.fargate_base
+}
