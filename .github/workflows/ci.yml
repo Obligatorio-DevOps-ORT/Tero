@@ -101,3 +101,9 @@ jobs:
 
       - name: Validar la configuración
         run: terraform validate
+        
+      - name: Validar infra/global
+        working-directory: infra/global
+        run: |
+          terraform init -backend=false
+          terraform validate
