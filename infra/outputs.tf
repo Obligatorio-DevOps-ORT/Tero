@@ -17,3 +17,13 @@ output "nat_public_ip" {
   description = "IP publica de salida de las subredes privadas (null si el NAT esta apagado)"
   value       = module.network.nat_public_ip
 }
+
+output "ecs_cluster_name" {
+  description = "Nombre del cluster ECS del ambiente"
+  value       = module.ecs_cluster.cluster_name
+}
+
+output "ecs_cluster_arn" {
+  description = "ARN del cluster ECS del ambiente"
+  value       = module.ecs_cluster.cluster_arn
+}

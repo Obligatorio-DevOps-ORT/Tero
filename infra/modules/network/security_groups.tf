@@ -1,3 +1,13 @@
+# Adopta el SG default que AWS crea en la VPC y le quita todas las reglas,
+# para que un recurso creado sin SG explicito no quede con trafico abierto.
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.this.id
+
+  tags = {
+    Name = "${var.name}-default-sg-no-usar"
+  }
+}
+
 resource "aws_security_group" "alb" {
   name        = "${var.name}-alb-sg"
   description = "ALB: recibe HTTP desde internet"

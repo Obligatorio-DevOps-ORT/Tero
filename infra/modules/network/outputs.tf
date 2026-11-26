@@ -39,6 +39,6 @@ output "redis_sg_id" {
 }
 
 output "nat_public_ip" {
-  description = "ID publica del NAT Gateway (null si enable_nat_gateway es false)"
+  description = "IP publica del NAT Gateway (null si enable_nat_gateway es false)"
   value       = one(aws_eip.nat[*].public_ip)
 }

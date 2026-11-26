@@ -1,5 +1,7 @@
-env                  = "prod"
-vpc_cidr             = "10.2.0.0/16"
-public_subnet_cidrs  = ["10.2.1.0/24", "10.2.2.0/24"]
-private_subnet_cidrs = ["10.2.11.0/24", "10.2.12.0/24"]
-enable_nat_gateway   = false
+env                       = "prod"
+vpc_cidr                  = "10.2.0.0/16"
+public_subnet_cidrs       = ["10.2.1.0/24", "10.2.2.0/24"]
+private_subnet_cidrs      = ["10.2.11.0/24", "10.2.12.0/24"]
+enable_nat_gateway        = false
+enable_container_insights = true
+fargate_base              = 1
