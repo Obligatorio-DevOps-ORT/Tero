@@ -12,3 +12,8 @@ output "private_subnet_ids" {
   description = "IDs de las subredes privadas"
   value       = module.network.private_subnet_ids
 }
+
+output "nat_public_ip" {
+  description = "IP publica de salida de las subredes privadas (null si el NAT esta apagado)"
+  value       = module.network.nat_public_ip
+}
