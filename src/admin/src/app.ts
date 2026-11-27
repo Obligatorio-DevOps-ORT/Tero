@@ -4,9 +4,14 @@ import jwt from 'jsonwebtoken';
 import { Pool } from 'pg';
 import crypto from 'crypto';
 import path from 'path';
+import { log, requestLogger, registrarEventosDelProceso } from './logger';
+
+registrarEventosDelProceso();
 
 const app = express();
+app.use(requestLogger);
 app.use(express.json());
+
 app.use(cookieParser());
 
 // ── Configuración ──────────────────────────────────────────────────────────
@@ -17,8 +22,10 @@ const REQUIRED_ENV = ['DB_PASSWORD', 'ADMIN_USERNAME', 'ADMIN_PASSWORD', 'ADMIN_
 
 const missing = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
 if (missing.length > 0) {
-  console.error(`[admin] Faltan variables de entorno obligatorias: ${missing.join(', ')}`);
-  console.error('[admin] En local: revisá el archivo .env (ver .env.example). En ECS: revisá los secretos inyectados en la task definition.');
+    log('ERROR', 'faltan variables de entorno obligatorias', {
+    faltantes: missing,
+    ayuda: 'En local: revisá el archivo .env (ver .env.example). En ECS: revisá los secretos inyectados en la task definition.',
+  });
   process.exit(1);
 }
 
@@ -166,4 +173,4 @@ app.get('*', (_req: Request, res: Response): void => {
 });
 
 const port = parseInt(process.env.PORT || '8080');
-app.listen(port, () => console.log(`Admin listening on :${port}`));
+app.listen(port, () => log('INFO', 'servidor escuchando', { port }));
