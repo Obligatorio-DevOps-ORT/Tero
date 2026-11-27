@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -40,6 +40,12 @@ import (
 // @BasePath /
 
 func main() {
+
+	// Logger en JSON: cada línea que se escriba va a stdout como un objeto JSON
+	// y siempre lleva el campo "service".
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With("service", "catalog")
+	slog.SetDefault(logger)
+
 	ctx := context.Background()
 
 	_, otelPresent := os.LookupEnv("OTEL_SERVICE_NAME")
@@ -47,36 +53,34 @@ func main() {
 	if otelPresent {
 		_, err := initTracer(ctx)
 		if err != nil {
-			log.Fatal(err)
+			fatal("no se pudo iniciar el tracer", err)
 		}
 	}
 
 	var config config.AppConfiguration
 	if err := envconfig.Process(ctx, &config); err != nil {
-		log.Fatal(err)
+		fatal("configuración inválida", err)
 	}
 
 	db, err := repository.NewRepository(config.Database)
 	if err != nil {
-		log.Fatal(err)
+		fatal("no se pudo conectar a la base de datos", err)
 	}
 
 	api, err := api.NewCatalogAPI(db)
 	if err != nil {
-		log.Fatal(err)
+		fatal("no se pudo crear la API", err)
 	}
 
 	r := gin.New()
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-		SkipPaths: []string{"/health"},
-	}))
+	r.Use(middleware.RequestLogger())
 
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(r)
 
 	c, err := controller.NewController(api)
 	if err != nil {
-		log.Fatalln("Error creating controller", err)
+		fatal("no se pudo crear el controller", err)
 	}
 
 	chaosController := middleware.NewChaosController()
@@ -125,7 +129,7 @@ func main() {
 	// it won't block the graceful shutdown handling below
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			fatal("el servidor no pudo escuchar en el puerto", err)
 		}
 	}()
 
@@ -137,17 +141,24 @@ func main() {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	slog.Info("apagando el servidor")
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		fatal("el servidor se apagó de forma forzada", err)
 	}
 
-	log.Println("Server exiting")
+	slog.Info("servidor detenido")
+}
+
+// fatal registra el error como JSON con nivel ERROR y termina el programa con código 1
+// (lo mismo que hacía log.Fatal, pero en el formato nuevo).
+func fatal(msg string, err error) {
+	slog.Error(msg, "error", err)
+	os.Exit(1)
 }
 
 func initTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {

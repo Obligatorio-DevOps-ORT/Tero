@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -58,26 +58,37 @@ type CreateOrderRequest struct {
 var db *gorm.DB
 
 func main() {
+
+	// Logger en JSON: cada línea que se escriba va a stdout como un objeto JSON
+	// y siempre lleva el campo "service".
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With("service", "orders")
+	slog.SetDefault(logger)
+
 	dsn := buildDSN()
 
 	var err error
 	for i := 0; i < 6; i++ {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: newGormLogger()})
 		if err == nil {
 			break
 		}
-		fmt.Printf("Waiting for PostgreSQL... (%v)\n", err)
+		slog.Warn("esperando a PostgreSQL", "intento", i+1, "error", err)
 		time.Sleep(5 * time.Second)
 	}
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		fatal("no se pudo conectar a la base de datos", err)
 	}
 
 	if err := db.AutoMigrate(&Order{}, &OrderItem{}); err != nil {
-		log.Fatal("Failed to migrate schema:", err)
+		fatal("no se pudo migrar el esquema", err)
 	}
 
-	r := gin.Default()
+	// gin.New() arranca sin middlewares (gin.Default() traía el logger de texto).
+	// Primero nuestro logger JSON y después Recovery, para que si un handler
+	// entra en pánico, Recovery responda 500 y el logger registre ese 500.
+	r := gin.New()
+	r.Use(requestLogger())
+	r.Use(gin.Recovery())
 
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(r)
@@ -90,8 +101,9 @@ func main() {
 	r.POST("/orders", createOrder)
 
 	port := getEnv("PORT", "8080")
+	slog.Info("servidor escuchando", "port", port)
 	if err := r.Run(":" + port); err != nil {
-		log.Fatal(err)
+		fatal("el servidor no pudo escuchar en el puerto", err)
 	}
 }
 
@@ -122,6 +134,7 @@ func createOrder(c *gin.Context) {
 	order.Items = req.Items
 
 	if err := db.Create(&order).Error; err != nil {
+		slog.Error("no se pudo guardar el pedido", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -133,6 +146,13 @@ func listOrders(c *gin.Context) {
 	var orders []Order
 	db.Preload("Items").Order("created_at desc").Find(&orders)
 	c.JSON(http.StatusOK, orders)
+}
+
+// fatal registra el error como JSON con nivel ERROR y termina el programa con código 1
+// (lo mismo que hacía log.Fatal, pero en el formato nuevo).
+func fatal(msg string, err error) {
+	slog.Error(msg, "error", err)
+	os.Exit(1)
 }
 
 func buildDSN() string {
