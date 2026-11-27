@@ -123,6 +123,7 @@ jobs:
   terraform-plan:
     name: Terraform plan (${{ matrix.ambiente }})
     if: github.event_name == 'pull_request'
+    needs: terraform
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
