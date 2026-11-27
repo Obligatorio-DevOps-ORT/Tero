@@ -45,6 +45,18 @@ jobs:
           docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep:1.186.0 \
             semgrep scan --config p/default --metrics=off --error
 
+  trivy:
+    name: Dependencias vulnerables (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Escanear dependencias con Trivy
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src aquasec/trivy:0.76.2 \
+            fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 .
+
   build:
     name: Build de ${{ matrix.servicio }}
     runs-on: ubuntu-latest

@@ -29,3 +29,15 @@ variable "enable_nat_gateway" {
   type        = bool
   default     = false
 }
+
+variable "enable_container_insights" {
+  description = "Activar Container Insights en el cluster ECS"
+  type        = bool
+  default     = false
+}
+
+variable "fargate_base" {
+  description = "Task minimas en FARGATE on-demand, el resto va a FARGATE_SPOT"
+  type        = number
+  default     = 0
+}
