@@ -113,3 +113,49 @@ jobs:
 
       - name: Validar la configuración
         run: terraform validate
+
+      - name: Validar infra/global
+        working-directory: infra/global
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+  terraform-plan:
+    name: Terraform plan (${{ matrix.ambiente }})
+    if: github.event_name == 'pull_request'
+    needs: terraform
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ambiente: [global, dev, test, prod]
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: 1.17.1
+
+      - name: Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Plan de ${{ matrix.ambiente }}
+        env:
+          AMBIENTE: ${{ matrix.ambiente }}
+        run: |
+          if [ "$AMBIENTE" = "global" ]; then
+            cd infra/global
+            terraform init -input=false
+            terraform plan -input=false -lock=false
+          else
+            cd infra
+            terraform init -input=false
+            terraform workspace select "$AMBIENTE"
+            terraform plan -input=false -lock=false -var-file="envs/$AMBIENTE.tfvars"
+          fi
