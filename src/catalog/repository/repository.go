@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -39,11 +40,11 @@ func createPostgreSQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, er
 	var err error
 
 	for i := 0; i < 6; i++ {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: newGormLogger()})
 		if err == nil {
 			return db, nil
 		}
-		fmt.Printf("Waiting for PostgreSQL to be ready... (%v)\n", err)
+		slog.Warn("esperando a PostgreSQL", "intento", i+1, "error", err)
 		time.Sleep(5 * time.Second)
 	}
 
@@ -56,11 +57,11 @@ func NewRepository(config config.DatabaseConfiguration) (CatalogRepository, erro
 
 	switch config.Type {
 	case "postgres":
-		fmt.Printf("Using postgres database %s\n", config.Endpoint)
+		slog.Info("usando base de datos postgres", "endpoint", config.Endpoint)
 		db, err = createPostgreSQLDatabase(config)
 	default:
-		fmt.Println("Using in-memory database")
-		db, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+		slog.Info("usando base de datos en memoria")
+		db, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{Logger: newGormLogger()})
 	}
 
 	if err != nil {
@@ -71,22 +72,22 @@ func NewRepository(config config.DatabaseConfiguration) (CatalogRepository, erro
 		panic(err)
 	}
 
-	fmt.Println("Running database migration...")
+	slog.Info("migrando el esquema de la base de datos")
 
 	// Migrate the schema
 	db.AutoMigrate(&model.Product{})
 
-	fmt.Println("Database migration complete")
+	slog.Info("migración completa")
 
 	products, err := LoadProductData()
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		slog.Error("no se pudieron cargar los productos de ejemplo", "error", err)
 		return nil, err
 	}
 
 	tags, err := LoadProductTagData()
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		slog.Error("no se pudieron cargar los tags de ejemplo", "error", err)
 		return nil, err
 	}
 

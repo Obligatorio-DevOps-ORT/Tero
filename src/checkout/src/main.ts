@@ -1,9 +1,13 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { JsonLogger, registrarEventosDelProceso } from './json.logger';
+
+registrarEventosDelProceso();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // logger: todo lo que escribe Nest (arranque, rutas, errores) sale en JSON.
+  const app = await NestFactory.create(AppModule, { logger: new JsonLogger() });
   app.useGlobalPipes(new ValidationPipe());
   app.enableShutdownHooks();
 

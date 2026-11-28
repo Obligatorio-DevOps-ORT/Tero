@@ -44,6 +44,7 @@ Un ADR con estado **"Aceptada, con un punto pendiente"** tiene la decisión prin
 | [ADR-0020](ADR-0020-imagenes-multi-stage-minimas-no-root.md) | Imágenes multi-stage, base mínima según el lenguaje y usuario no-root | Aceptada |
 | [ADR-0021](ADR-0021-secretos-fuera-del-repo-en-local.md) | Secretos fuera del repo, *fail fast* y sin puertos de datos en local | Aceptada |
 | [ADR-0022](ADR-0022-seguridad-del-pipeline.md) | Seguridad del pipeline: Gitleaks, Semgrep y actions fijadas a SHA | Aceptada |
+| [ADR-0023](ADR-0023-formato-comun-de-logs.md) | Logs en JSON con un esquema común en los 6 servicios | Aceptada |
 
 ### Decisiones pendientes (se documentan cuando se tomen)
 
@@ -72,7 +73,7 @@ Un ADR con estado **"Aceptada, con un punto pendiente"** tiene la decisión prin
 
 ## Cómo agregar un ADR
 
-1. Copiá [plantilla.md](plantilla.md) con el número siguiente y un nombre corto: `ADR-0023-base-de-datos-rds-elasticache.md`. Poné la tarea del tablero en el campo **Tarea / PRs**.
+1. Copiá [plantilla.md](plantilla.md) con el número siguiente y un nombre corto: `ADR-0024-base-de-datos-rds-elasticache.md`. Poné la tarea del tablero en el campo **Tarea / PRs**.
 2. Completalo y sumalo al índice de arriba.
 3. Abrilo por PR como cualquier otro cambio, con los otros dos como reviewers. La discusión del PR es parte de la decisión.
 
