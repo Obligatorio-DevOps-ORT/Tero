@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"fmt"
 	"log/slog"
+	"net/http"
+	"runtime/debug"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,4 +39,16 @@ func RequestLogger() gin.HandlerFunc {
 			"duration_ms", float64(time.Since(inicio).Microseconds())/1000,
 		)
 	}
+}
+
+// RecuperarPanico reemplaza a gin.Recovery(): si un handler entra en pánico,
+// responde 500 y lo registra en JSON. gin.Recovery() lo escribe en texto,
+// en varias líneas y con códigos de color.
+// Va después de RequestLogger, para que el logger registre ese 500.
+func RecuperarPanico() gin.HandlerFunc {
+	// nil: que Gin no escriba nada por su cuenta; lo escribimos nosotros.
+	return gin.CustomRecoveryWithWriter(nil, func(c *gin.Context, err any) {
+		slog.Error("pánico en un handler", "error", fmt.Sprint(err), "stack", string(debug.Stack()))
+		c.AbortWithStatus(http.StatusInternalServerError)
+	})
 }

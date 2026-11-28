@@ -24,8 +24,10 @@ class JsonFormatter(logging.Formatter):
             "msg": record.getMessage(),
             "service": SERVICE,
         }
-        # Campos extra (method, path, status...) que se pasan con extra={"campos": {...}}
-        linea.update(getattr(record, "campos", {}))
+        # Campos extra (method, path, status...) que se pasan con extra={"campos": {...}}.
+        # setdefault los agrega solo si no existen: así no pueden pisar time, level, msg ni service.
+        for clave, valor in getattr(record, "campos", {}).items():
+            linea.setdefault(clave, valor)
         # Si el log viene de una excepción, se agrega el detalle (traceback) en un campo.
         if record.exc_info:
             linea["error"] = self.formatException(record.exc_info)

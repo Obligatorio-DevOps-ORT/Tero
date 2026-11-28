@@ -73,7 +73,10 @@ func main() {
 	}
 
 	r := gin.New()
+	// Primero el logger y después la recuperación de pánicos: si un handler
+	// entra en pánico, RecuperarPanico responde 500 y el logger registra ese 500.
 	r.Use(middleware.RequestLogger())
+	r.Use(middleware.RecuperarPanico())
 
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(r)

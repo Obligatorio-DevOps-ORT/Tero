@@ -8,13 +8,19 @@ type Nivel = 'INFO' | 'WARN' | 'ERROR';
 // Escribe una línea JSON por stdout con el esquema común de los 6 servicios:
 // time, level, msg, service y los campos extra que se pasen.
 export function log(level: Nivel, msg: string, campos: Record<string, unknown> = {}): void {
-  const linea = {
+  const linea: Record<string, unknown> = {
     time: new Date().toISOString(),
     level,
     msg,
     service: SERVICE,
-    ...campos,
   };
+  // Los campos extra se agregan solo si no existen: así no pueden pisar
+  // time, level, msg ni service.
+  for (const [clave, valor] of Object.entries(campos)) {
+    if (!(clave in linea)) {
+      linea[clave] = valor;
+    }
+  }
   console.log(JSON.stringify(linea));
 }
 

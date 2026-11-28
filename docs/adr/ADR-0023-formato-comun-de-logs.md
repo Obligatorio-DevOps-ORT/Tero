@@ -3,7 +3,7 @@
 - **Estado:** Aceptada
 - **Fecha:** 2026-11-27
 - **Decisores:** @RominaRamon10
-- **Tarea / PRs:** S3-13 (#47)
+- **Tarea / PRs:** S3-13 (#47), PR #119 (revisado por @nicokuro)
 
 ## Contexto
 
@@ -33,12 +33,13 @@ Reglas:
 
 - **Nivel según el status:** 5xx → `ERROR`, 4xx → `WARN`, el resto → `INFO`. No se escriben `DEBUG` ni `verbose`.
 - **`/health` no se registra:** los health checks de ECS y del ALB llegan cada pocos segundos y no aportan información.
-- **No se registran datos sensibles:** ni el body (el login del admin manda la contraseña), ni cookies (el JWT del admin), ni headers, ni la IP o el navegador del cliente. El `path` va sin la *query* (`?page=2`).
+- **No se registran datos sensibles:** ni el body (el login del admin manda la contraseña), ni cookies (el JWT del admin), ni headers, ni la IP o el navegador del cliente. El `path` va sin la *query* (`?page=2`), y las consultas SQL se registran sin sus valores (con `$1`, `$2`…), porque pueden traer datos de los clientes.
+- **Los campos comunes no se pueden pisar:** si un mensaje trae un campo extra con el mismo nombre que `time`, `level`, `msg` o `service`, se descarta el extra.
 - **Sin librerías nuevas:** se usa lo que trae cada lenguaje.
 
 | Servicio | Cómo |
 | --- | --- |
-| catalog, orders | `log/slog` (librería estándar de Go) con `JSONHandler`, un middleware de Gin propio y un adaptador para que GORM escriba en `slog` (solo errores y consultas de más de 200 ms, sin `record not found`) |
+| catalog, orders | `log/slog` (librería estándar de Go) con `JSONHandler`; un middleware de Gin propio; un reemplazo de `gin.Recovery()` que, si un handler entra en pánico, responde 500 y lo registra en JSON (`gin.Recovery()` lo escribe en texto, en varias líneas y con colores); y un logger propio para GORM: `ERROR` para errores de SQL o de conexión, `WARN` para consultas de más de 200 ms, sin `record not found` y sin los valores de las consultas |
 | cart | `logging` de Python con un `JsonFormatter` propio; los logs de uvicorn pasan por el mismo formato y su *access log* se reemplaza por un middleware de FastAPI que mide la duración |
 | ui, admin | `logger.ts` propio con `JSON.stringify`; middleware que registra cada request al terminar; los errores del proxy de ui (`[HPM]`) y los avisos de Node también pasan a JSON |
 | checkout | `JsonLogger` propio que implementa el `LoggerService` de Nest; el campo extra `context` indica qué parte de Nest escribió el mensaje (`HTTP`, `ExceptionsHandler`, `Redis`) |

@@ -73,7 +73,7 @@ Un ADR con estado **"Aceptada, con un punto pendiente"** tiene la decisión prin
 
 ## Cómo agregar un ADR
 
-1. Copiá [plantilla.md](plantilla.md) con el número siguiente y un nombre corto: `ADR-0023-base-de-datos-rds-elasticache.md`. Poné la tarea del tablero en el campo **Tarea / PRs**.
+1. Copiá [plantilla.md](plantilla.md) con el número siguiente y un nombre corto: `ADR-0024-base-de-datos-rds-elasticache.md`. Poné la tarea del tablero en el campo **Tarea / PRs**.
 2. Completalo y sumalo al índice de arriba.
 3. Abrilo por PR como cualquier otro cambio, con los otros dos como reviewers. La discusión del PR es parte de la decisión.
 

@@ -22,7 +22,7 @@ const REQUIRED_ENV = ['DB_PASSWORD', 'ADMIN_USERNAME', 'ADMIN_PASSWORD', 'ADMIN_
 
 const missing = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
 if (missing.length > 0) {
-    log('ERROR', 'faltan variables de entorno obligatorias', {
+  log('ERROR', 'faltan variables de entorno obligatorias', {
     faltantes: missing,
     ayuda: 'En local: revisá el archivo .env (ver .env.example). En ECS: revisá los secretos inyectados en la task definition.',
   });

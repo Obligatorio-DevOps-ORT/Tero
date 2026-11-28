@@ -84,11 +84,11 @@ func main() {
 	}
 
 	// gin.New() arranca sin middlewares (gin.Default() traía el logger de texto).
-	// Primero nuestro logger JSON y después Recovery, para que si un handler
-	// entra en pánico, Recovery responda 500 y el logger registre ese 500.
+	// Primero nuestro logger JSON y después la recuperación de pánicos: si un
+	// handler entra en pánico, recuperarPanico responde 500 y el logger registra ese 500.
 	r := gin.New()
 	r.Use(requestLogger())
-	r.Use(gin.Recovery())
+	r.Use(recuperarPanico())
 
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(r)
